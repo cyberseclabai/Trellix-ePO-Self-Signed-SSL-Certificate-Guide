@@ -209,7 +209,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 **CyberSecLab**
-- YouTube: [@CyberSecLabdev](https://youtube.com/@CyberSecLabdev)
+- YouTube: [@CyberSecLabdev](https://youtube.com/@CyberSecLabai)
 - Website: [cybersecops.dev](https://cybersecops.dev)
 
 ---
