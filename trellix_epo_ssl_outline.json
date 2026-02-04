@@ -1,0 +1,148 @@
+{
+  "pages": [
+    {
+      "number": 1,
+      "type": "cover",
+      "title": "Trellix ePO Self-Signed SSL Certificate",
+      "content": "Complete Step-by-Step Guide | Most Secure & Recommended Method"
+    },
+    {
+      "number": 2,
+      "type": "table_of_contents",
+      "title": "Contents",
+      "content": "1. Overview & Prerequisites; 2. OpenSSL Installation & Setup; 3. Certificate Generation Process; 4. ePO Deployment & Verification; 5. Troubleshooting & Best Practices"
+    },
+    {
+      "number": 3,
+      "type": "chapter",
+      "title": "01: Overview & Prerequisites",
+      "content": "Understanding self-signed certificates and preparing your environment"
+    },
+    {
+      "number": 4,
+      "type": "content",
+      "title": "Why Self-Signed Certificates?",
+      "content": "This page explains the rationale behind using self-signed SSL certificates for Trellix ePO, including ideal use cases for internal networks and lab environments, and the security features that make this method robust and recommended."
+    },
+    {
+      "number": 5,
+      "type": "content",
+      "title": "Prerequisites & Requirements",
+      "content": "This page presents the complete list of hardware, software, and access requirements needed before starting the certificate generation process, organized in a clear table format for easy reference."
+    },
+    {
+      "number": 6,
+      "type": "chapter",
+      "title": "02: OpenSSL Installation & Setup",
+      "content": "Installing OpenSSL and creating the working environment"
+    },
+    {
+      "number": 7,
+      "type": "content",
+      "title": "Step 1: Download and Install OpenSSL",
+      "content": "This page provides detailed instructions for downloading the correct OpenSSL version, installation steps with specific options, and explains why the Light version is sufficient for certificate creation tasks."
+    },
+    {
+      "number": 8,
+      "type": "content",
+      "title": "Step 2: Create Folder Structure",
+      "content": "This page explains the purpose of each folder in the SSL directory structure and provides the exact commands to create the organized file system for certificate management."
+    },
+    {
+      "number": 9,
+      "type": "content",
+      "title": "Step 3: Create OpenSSL Configuration File",
+      "content": "This page presents the complete OpenSSL configuration file with Subject Alternative Name (SAN) support, explains each field's purpose, and provides guidance on customizing values for your specific environment."
+    },
+    {
+      "number": 10,
+      "type": "chapter",
+      "title": "03: Certificate Generation Process",
+      "content": "Generating secure keys and certificates with OpenSSL"
+    },
+    {
+      "number": 11,
+      "type": "content",
+      "title": "Step 4: Generate Password-Protected Private Key",
+      "content": "This page details the command for creating a secure 2048-bit RSA private key with Triple DES encryption, explains each parameter, and emphasizes the importance of remembering the passphrase."
+    },
+    {
+      "number": 12,
+      "type": "content",
+      "title": "Step 5: Create Self-Signed Certificate with SAN",
+      "content": "This page walks through generating the self-signed certificate using the configuration file, explains the command parameters including validity period and key usage, and shows the expected output."
+    },
+    {
+      "number": 13,
+      "type": "content",
+      "title": "Step 6: Convert to RSA Traditional Format",
+      "content": "This page explains the critical conversion step from PKCS#8 to traditional RSA format required by ePO, provides the conversion command, and clarifies why this step is necessary for compatibility."
+    },
+    {
+      "number": 14,
+      "type": "content",
+      "title": "Step 7: Verify Certificate (Optional but Recommended)",
+      "content": "This page presents the verification command and shows what to look for in the output, including confirming the Subject Alternative Name, organization details, and validity period before proceeding to deployment."
+    },
+    {
+      "number": 15,
+      "type": "chapter",
+      "title": "04: ePO Deployment & Verification",
+      "content": "Uploading certificates and completing the installation"
+    },
+    {
+      "number": 16,
+      "type": "content",
+      "title": "Step 8: Upload Certificate to ePO",
+      "content": "This page provides step-by-step navigation instructions for the ePO console, shows exactly which files to upload in each field, and explains why the private key password field should be left empty."
+    },
+    {
+      "number": 17,
+      "type": "content",
+      "title": "Step 9: Restart ePO Server",
+      "content": "This page presents three different methods for restarting the ePO Application Server service, including command-line and GUI options, and explains why the restart is essential for the new certificate to take effect."
+    },
+    {
+      "number": 18,
+      "type": "content",
+      "title": "Step 10: Import Certificate to Browser",
+      "content": "This page details the process of importing the certificate to the Windows Trusted Root Certification Authorities store to eliminate browser security warnings, with step-by-step instructions for the certificate import wizard."
+    },
+    {
+      "number": 19,
+      "type": "content",
+      "title": "Summary of Files Created",
+      "content": "This page presents a comprehensive table summarizing all four files created during the process, their locations, and their specific purposes in the certificate infrastructure for easy reference and backup planning."
+    },
+    {
+      "number": 20,
+      "type": "chapter",
+      "title": "05: Troubleshooting & Best Practices",
+      "content": "Common issues, solutions, and security recommendations"
+    },
+    {
+      "number": 21,
+      "type": "content",
+      "title": "Troubleshooting Common Errors",
+      "content": "This page addresses the most frequently encountered errors including invalid private key format, missing SAN errors, persistent browser warnings, and service restart issues, with specific causes and solutions for each."
+    },
+    {
+      "number": 22,
+      "type": "content",
+      "title": "Quick Reference Commands",
+      "content": "This page provides a complete consolidated list of all commands used throughout the process, organized by step, for quick copy-paste reference during actual certificate deployment."
+    },
+    {
+      "number": 23,
+      "type": "content",
+      "title": "Security Best Practices",
+      "content": "This page outlines six critical security recommendations for maintaining certificate infrastructure integrity, including key protection, strong passphrases, access restrictions, renewal planning, backups, and production environment considerations."
+    },
+    {
+      "number": 24,
+      "type": "final",
+      "title": "Certificate Deployment Complete",
+      "content": "Your Trellix ePO server is now secured with a self-signed SSL certificate. Remember to monitor certificate expiration and renew before the 365-day validity period ends."
+    }
+  ]
+}

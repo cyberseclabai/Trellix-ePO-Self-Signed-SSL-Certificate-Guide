@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Trellix ePO Self-Signed SSL Certificate Guide</title>
+<script src="https://statics.moonshot.cn/kimi-ppt/html-gen/static/tailwindcss@4_0805.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Chiron+Hei+HK:wght@400;700&amp;family=Hedvig+Letters+Sans:wght@400;700&amp;family=Quattrocento+Sans:wght@400;700&amp;family=Coda:wght@400;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdmirror.com/npm/mathjax@3.2.2/es5/tex-svg.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .ppt-slide {
+                @apply relative w-[1280px] h-[720px] mx-auto p-[40px] box-border overflow-hidden mb-[40px] bg-white;
+            }
+        }
+    </style>
+<style>
+        body {
+            color: #1a1a1a;
+            font-family: 'Quattrocento Sans', sans-serif;
+        }
+        .font-heading {
+            font-family: 'Chiron Hei HK', sans-serif;
+        }
+        .font-heading-alt {
+            font-family: 'Hedvig Letters Sans', sans-serif;
+        }
+        .font-body-alt {
+            font-family: 'Coda', sans-serif;
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background: #0d1117;
+            border: 2px solid #0150c5;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .code-block-light {
+            font-family: 'Courier New', monospace;
+            background: #f6f8fa;
+            border: 2px solid #0150c5;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 py-8">
+<!-- Slide 1: Cover -->
+<div class="ppt-slide" type="cover">
+<img alt="SSL Certificate" class="absolute inset-0 w-full h-full object-cover opacity-20" src="cover_ssl_certificate.png"/>
+<div class="absolute inset-0 bg-gradient-to-br from-[#0150c5]/90 via-[#0150c5]/80 to-[#000000]/70"></div>
+<div class="relative h-full flex flex-col justify-center items-start z-10">
+<div class="mb-6">
+<div class="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+<p class="text-white/90 text-base font-semibold tracking-wider">TECHNICAL GUIDE</p>
+</div>
+</div>
+<h1 class="font-heading text-7xl font-bold text-white mb-6 leading-tight max-w-4xl">
+                Trellix ePO<br/>Self-Signed SSL<br/>Certificate
+            </h1>
+<p class="text-2xl text-white/90 mb-8 max-w-2xl font-body-alt">Complete Step-by-Step Guide (Most Secure &amp; Recommended Method)</p>
+<div class="flex items-center gap-6 mt-8">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+<i class="fas fa-shield-alt text-white text-xl"></i>
+</div>
+<span class="text-white/90 text-lg">Enterprise Security</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+<i class="fas fa-lock text-white text-xl"></i>
+</div>
+<span class="text-white/90 text-lg">256-bit Encryption</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 2: Table of Contents -->
+<div class="ppt-slide" type="table_of_contents">
+<div class="mb-8">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">PRESENTATION OVERVIEW</p>
+<h2 class="font-heading text-5xl font-bold text-[#000000]">Contents</h2>
+</div>
+<div class="grid grid-cols-2 gap-6 mt-8">
+<div class="bg-white p-6 rounded-xl border-l-4 border-[#0150c5] hover:shadow-lg transition-shadow">
+<div class="flex items-start gap-4">
+<div class="w-14 h-14 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-2xl font-heading shrink-0">01</div>
+<div>
+<h3 class="font-heading-alt text-2xl font-bold text-[#000000] mb-2">Overview &amp; Prerequisites</h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Understanding self-signed certificates and preparing your environment</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border-l-4 border-[#0150c5] hover:shadow-lg transition-shadow">
+<div class="flex items-start gap-4">
+<div class="w-14 h-14 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-2xl font-heading shrink-0">02</div>
+<div>
+<h3 class="font-heading-alt text-2xl font-bold text-[#000000] mb-2">OpenSSL Installation &amp; Setup</h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Installing OpenSSL and creating the working environment</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border-l-4 border-[#0150c5] hover:shadow-lg transition-shadow">
+<div class="flex items-start gap-4">
+<div class="w-14 h-14 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-2xl font-heading shrink-0">03</div>
+<div>
+<h3 class="font-heading-alt text-2xl font-bold text-[#000000] mb-2">Certificate Generation Process</h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Generating secure keys and certificates with OpenSSL</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border-l-4 border-[#0150c5] hover:shadow-lg transition-shadow">
+<div class="flex items-start gap-4">
+<div class="w-14 h-14 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-2xl font-heading shrink-0">04</div>
+<div>
+<h3 class="font-heading-alt text-2xl font-bold text-[#000000] mb-2">ePO Deployment &amp; Verification</h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Uploading certificates and completing the installation</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-6 rounded-xl border-l-4 border-[#0150c5] hover:shadow-lg transition-shadow col-span-2">
+<div class="flex items-start gap-4">
+<div class="w-14 h-14 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-2xl font-heading shrink-0">05</div>
+<div>
+<h3 class="font-heading-alt text-2xl font-bold text-[#000000] mb-2">Troubleshooting &amp; Best Practices</h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Common issues, solutions, and security recommendations</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 3: Chapter 1 -->
+<div class="ppt-slide" type="chapter">
+<img alt="Overview" class="absolute inset-0 w-full h-full object-cover opacity-30" src="chapter1_overview.png"/>
+<div class="absolute inset-0 bg-gradient-to-br from-[#000000]/85 via-[#0150c5]/75 to-[#000000]/90"></div>
+<div class="relative h-full flex flex-col justify-center z-10">
+<div class="mb-6">
+<div class="inline-block px-4 py-2 bg-[#0150c5]/30 backdrop-blur-sm rounded-lg border border-[#0150c5]/50">
+<p class="text-white/90 text-base font-semibold tracking-wider">CHAPTER ONE</p>
+</div>
+</div>
+<h1 class="font-heading text-7xl font-bold text-white mb-6 leading-tight">Overview &amp;<br/>Prerequisites</h1>
+<p class="text-2xl text-white/90 max-w-2xl font-body-alt">Understanding self-signed certificates and preparing your environment</p>
+<div class="mt-12 flex items-center gap-4">
+<div class="h-1 w-24 bg-[#0150c5]"></div>
+<span class="text-white/70 text-lg">5 min read</span>
+</div>
+</div>
+</div>
+<!-- Slide 4: Why Self-Signed Certificates? -->
+<div class="ppt-slide" type="content">
+<div class="mb-6">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">OVERVIEW</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Why Self-Signed Certificates?</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-[#0150c5]/10 flex items-center justify-center shrink-0">
+<i class="fas fa-network-wired text-[#0150c5] text-lg"></i>
+</div>
+<div>
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-2">Internal Networks &amp; Lab Environments</h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Self-signed certificates are ideal for <strong>internal infrastructure</strong> where you control the trust environment. Perfect for testing, development, and isolated production networks.</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-[#0150c5]/10 flex items-center justify-center shrink-0">
+<i class="fas fa-clock text-[#0150c5] text-lg"></i>
+</div>
+<div>
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-2">When You Cannot Wait for a CA</h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Certificate Authority (CA) validation can take <strong>days or weeks</strong>. Self-signed certificates provide immediate encryption for urgent deployments or time-sensitive projects.</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-[#0150c5]/10 flex items-center justify-center shrink-0">
+<i class="fas fa-shield-alt text-[#0150c5] text-lg"></i>
+</div>
+<div>
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-2">Basic Security &amp; Encryption</h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Provides <strong>end-to-end encryption</strong> for data in transit. While not automatically trusted by browsers, the cryptographic protection is identical to CA-signed certificates.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<div class="bg-[#0150c5] p-6 rounded-xl text-white">
+<h3 class="font-heading-alt text-2xl font-bold mb-4">What Makes This Method Secure?</h3>
+<div class="space-y-3">
+<div class="flex items-start gap-3">
+<i class="fas fa-check-circle text-white text-xl shrink-0 mt-1"></i>
+<div>
+<p class="font-semibold text-lg">Password-Protected Private Key</p>
+<p class="text-white/80 text-base">Industry best practice for key security</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<i class="fas fa-check-circle text-white text-xl shrink-0 mt-1"></i>
+<div>
+<p class="font-semibold text-lg">2048-bit RSA Encryption</p>
+<p class="text-white/80 text-base">Trellix recommended minimum</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<i class="fas fa-check-circle text-white text-xl shrink-0 mt-1"></i>
+<div>
+<p class="font-semibold text-lg">Subject Alternative Name (SAN)</p>
+<p class="text-white/80 text-base">Required by modern browsers</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<i class="fas fa-check-circle text-white text-xl shrink-0 mt-1"></i>
+<div>
+<p class="font-semibold text-lg">ePO 5.10.0+ Compatible</p>
+<p class="text-white/80 text-base">Works with latest OpenSSL versions</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#000000] p-5 rounded-xl text-white">
+<div class="flex items-center gap-3 mb-3">
+<i class="fas fa-info-circle text-[#0150c5] text-xl"></i>
+<h4 class="font-heading-alt text-lg font-bold">Important Note</h4>
+</div>
+<p class="text-white/90 text-base leading-relaxed">This guide follows <strong>Trellix official documentation</strong> and industry best practices. The method is specifically designed for ePolicy Orchestrator 5.10.0 and newer versions.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 5: Prerequisites & Requirements -->
+<div class="ppt-slide" type="content">
+<div class="mb-5">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">REQUIREMENTS</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Prerequisites &amp; Requirements</h2>
+<p class="text-lg text-[#1a1a1a]/70 mt-2">Ensure you have all necessary components before starting</p>
+</div>
+<div class="bg-white rounded-xl overflow-hidden border border-gray-200">
+<table class="w-full">
+<thead>
+<tr class="bg-[#0150c5] text-white">
+<th class="px-6 py-4 text-left font-heading-alt text-xl">Requirement</th>
+<th class="px-6 py-4 text-left font-heading-alt text-xl">Details</th>
+<th class="px-6 py-4 text-left font-heading-alt text-xl">Notes</th>
+</tr>
+</thead>
+<tbody class="text-base">
+<tr class="border-b border-gray-200">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<i class="fas fa-server text-[#0150c5] text-xl"></i>
+<span class="font-semibold text-[#000000]">ePO Server</span>
+</div>
+</td>
+<td class="px-6 py-4 text-[#1a1a1a]">Trellix ePO On-Prem 5.10.0</td>
+<td class="px-6 py-4 text-[#1a1a1a]/70">Or newer version</td>
+</tr>
+<tr class="border-b border-gray-200 bg-gray-50">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<i class="fab fa-windows text-[#0150c5] text-xl"></i>
+<span class="font-semibold text-[#000000]">Operating System</span>
+</div>
+</td>
+<td class="px-6 py-4 text-[#1a1a1a]">Windows Server</td>
+<td class="px-6 py-4 text-[#1a1a1a]/70">2016, 2019, or 2022</td>
+</tr>
+<tr class="border-b border-gray-200">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<i class="fas fa-key text-[#0150c5] text-xl"></i>
+<span class="font-semibold text-[#000000]">OpenSSL</span>
+</div>
+</td>
+<td class="px-6 py-4 text-[#1a1a1a]">Win64 OpenSSL v3.6.1 Light</td>
+<td class="px-6 py-4 text-[#1a1a1a]/70">~6MB download from slproweb.com</td>
+</tr>
+<tr class="bg-gray-50">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<i class="fas fa-user-shield text-[#0150c5] text-xl"></i>
+<span class="font-semibold text-[#000000]">Access</span>
+</div>
+</td>
+<td class="px-6 py-4 text-[#1a1a1a]">Administrator privileges</td>
+<td class="px-6 py-4 text-[#1a1a1a]/70">Required for installation &amp; service restart</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="grid grid-cols-3 gap-4 mt-5">
+<div class="bg-[#0150c5]/10 p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<i class="fas fa-download text-[#0150c5] text-lg"></i>
+<h4 class="font-heading-alt text-lg font-bold text-[#000000]">Download URL</h4>
+</div>
+<div class="code-block-light p-3 rounded-lg">
+<p class="text-base text-[#000000] font-mono break-all">https://slproweb.com/products/Win32OpenSSL.html</p>
+</div>
+</div>
+<div class="bg-[#000000]/5 p-4 rounded-xl border-l-4 border-[#000000]">
+<div class="flex items-center gap-2 mb-2">
+<i class="fas fa-folder-open text-[#000000] text-lg"></i>
+<h4 class="font-heading-alt text-lg font-bold text-[#000000]">Install Path</h4>
+</div>
+<div class="code-block-light p-3 rounded-lg">
+<p class="text-base text-[#000000] font-mono">C:\Program Files\OpenSSL-Win64\</p>
+</div>
+</div>
+<div class="bg-[#0150c5]/10 p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<i class="fas fa-lightbulb text-[#0150c5] text-lg"></i>
+<h4 class="font-heading-alt text-lg font-bold text-[#000000]">Pro Tip</h4>
+</div>
+<p class="text-base text-[#1a1a1a]/80">Use "Light" version - contains all essential tools</p>
+</div>
+</div>
+</div>
+<!-- Slide 6: Chapter 2 -->
+<div class="ppt-slide" type="chapter">
+<img alt="Setup" class="absolute inset-0 w-full h-full object-cover opacity-30" src="chapter2_setup.png"/>
+<div class="absolute inset-0 bg-gradient-to-br from-[#0150c5]/85 via-[#000000]/80 to-[#0150c5]/85"></div>
+<div class="relative h-full flex flex-col justify-center z-10">
+<div class="mb-6">
+<div class="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+<p class="text-white/90 text-base font-semibold tracking-wider">CHAPTER TWO</p>
+</div>
+</div>
+<h1 class="font-heading text-7xl font-bold text-white mb-6 leading-tight">OpenSSL<br/>Installation &amp;<br/>Setup</h1>
+<p class="text-2xl text-white/90 max-w-2xl font-body-alt">Installing OpenSSL and creating the working environment</p>
+<div class="mt-12 flex items-center gap-4">
+<div class="h-1 w-24 bg-white"></div>
+<span class="text-white/70 text-lg">10 min setup</span>
+</div>
+</div>
+</div>
+<!-- Slide 7: Step 1 - Download and Install OpenSSL -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">STEP 1</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Download and Install OpenSSL</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-question-circle text-[#0150c5]"></i>
+                        What is OpenSSL?
+                    </h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed mb-3">OpenSSL is a free, open-source toolkit for creating SSL/TLS certificates. <strong>Trellix recommends using OpenSSL</strong> for certificate generation due to its reliability and industry-wide adoption.</p>
+<div class="bg-[#0150c5]/10 p-3 rounded-lg">
+<p class="text-base text-[#1a1a1a]"><i class="fas fa-info-circle text-[#0150c5] mr-2"></i>Used by 70%+ of web servers globally</p>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-download text-[#0150c5]"></i>
+                        Download Location
+                    </h3>
+<div class="code-block-light p-3 rounded-lg mb-3">
+<p class="text-base text-[#000000] font-mono break-all">https://slproweb.com/products/Win32OpenSSL.html</p>
+</div>
+<p class="text-base text-[#1a1a1a]/80">Download <strong>Win64 OpenSSL v3.6.1 Light</strong> (EXE version, ~6MB)</p>
+</div>
+<div class="bg-[#000000] p-4 rounded-xl text-white">
+<h4 class="font-heading-alt text-lg font-bold mb-2 flex items-center gap-2">
+<i class="fas fa-lightbulb text-[#0150c5]"></i>
+                        Why "Light" Version?
+                    </h4>
+<p class="text-base text-white/90 leading-relaxed">The Light version contains <strong>all essential tools</strong> needed for certificate creation. The full version includes extra development files not required for this task.</p>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl">
+<h3 class="font-heading-alt text-2xl font-bold text-[#000000] mb-4 flex items-center gap-2">
+<i class="fas fa-list-ol text-[#0150c5]"></i>
+                    Installation Steps
+                </h3>
+<div class="space-y-3">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">1</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Download <strong>Win64 OpenSSL v3.6.1 Light</strong> (EXE version)</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">2</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Run the installer as <strong>Administrator</strong></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">3</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Accept the license agreement</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">4</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Keep default installation path: <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm">C:\Program Files\OpenSSL-Win64\</span></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">5</div>
+<div class="pt-1">
+<p class="text-base text-[#1a1a1a]/80">When asked <strong>"Copy OpenSSL DLLs to:"</strong> → Select:</p>
+<div class="bg-[#0150c5]/10 p-2 rounded-lg mt-2 border-l-4 border-[#0150c5]">
+<p class="text-base text-[#000000] font-semibold">"The Windows system directory"</p>
+</div>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">6</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Complete the installation</p>
+</div>
+</div>
+<div class="mt-4 bg-[#0150c5]/10 p-3 rounded-lg border-l-4 border-[#0150c5]">
+<p class="text-base text-[#000000]"><i class="fas fa-check-circle text-[#0150c5] mr-2"></i><strong>Installation complete!</strong> OpenSSL is now ready to use.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 8: Step 2 - Create Folder Structure -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">STEP 2</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Create Folder Structure</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-folder-open text-[#0150c5]"></i>
+                        Why Create These Folders?
+                    </h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">OpenSSL does not create output folders automatically. These folders help <strong>organize your certificate files</strong> and match the official Trellix documentation structure for easy management and backup.</p>
+</div>
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-terminal text-[#0150c5]"></i>
+                        Open Command Prompt as Administrator
+                    </h3>
+<div class="space-y-2">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">1</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Press <strong>Win + X</strong></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">2</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Select <strong>"Windows Terminal (Admin)"</strong> or <strong>"Command Prompt (Admin)"</strong></p>
+</div>
+</div>
+</div>
+<div class="bg-[#000000] p-5 rounded-xl text-white">
+<h3 class="font-heading-alt text-xl font-bold mb-3 flex items-center gap-2">
+<i class="fas fa-code text-[#0150c5]"></i>
+                        Run These Commands
+                    </h3>
+<div class="space-y-2">
+<div class="code-block p-3 rounded-lg">
+<p class="text-base text-white font-mono">mkdir C:\ssl</p>
+</div>
+<div class="code-block p-3 rounded-lg">
+<p class="text-base text-white font-mono">mkdir C:\ssl\certs</p>
+</div>
+<div class="code-block p-3 rounded-lg">
+<p class="text-base text-white font-mono">mkdir C:\ssl\keys</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl">
+<h3 class="font-heading-alt text-2xl font-bold text-[#000000] mb-4 flex items-center gap-2">
+<i class="fas fa-sitemap text-[#0150c5]"></i>
+                    Folder Purpose
+                </h3>
+<div class="space-y-4">
+<div class="border-l-4 border-[#0150c5] pl-4">
+<div class="flex items-center gap-3 mb-2">
+<i class="fas fa-folder text-[#0150c5] text-2xl"></i>
+<div>
+<h4 class="font-heading-alt text-xl font-bold text-[#000000]">C:\ssl\</h4>
+<p class="text-base text-[#1a1a1a]/70">Main folder</p>
+</div>
+</div>
+<p class="text-base text-[#1a1a1a]/80">Main folder for all SSL files and configuration</p>
+</div>
+<div class="border-l-4 border-[#0150c5] pl-4">
+<div class="flex items-center gap-3 mb-2">
+<i class="fas fa-certificate text-[#0150c5] text-2xl"></i>
+<div>
+<h4 class="font-heading-alt text-xl font-bold text-[#000000]">C:\ssl\certs\</h4>
+<p class="text-base text-[#1a1a1a]/70">Certificate files</p>
+</div>
+</div>
+<p class="text-base text-[#1a1a1a]/80">Stores certificate files (.cer) - public certificates</p>
+</div>
+<div class="border-l-4 border-[#0150c5] pl-4">
+<div class="flex items-center gap-3 mb-2">
+<i class="fas fa-key text-[#0150c5] text-2xl"></i>
+<div>
+<h4 class="font-heading-alt text-xl font-bold text-[#000000]">C:\ssl\keys\</h4>
+<p class="text-base text-[#1a1a1a]/70">Private key files</p>
+</div>
+</div>
+<p class="text-base text-[#1a1a1a]/80">Stores private key files (.key) - <strong>keep secure!</strong></p>
+</div>
+</div>
+<div class="mt-4 bg-[#0150c5]/10 p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<i class="fas fa-folder-tree text-[#0150c5] text-xl"></i>
+<h4 class="font-heading-alt text-lg font-bold text-[#000000]">Resulting Structure</h4>
+</div>
+<div class="code-block-light p-3 rounded-lg">
+<p class="text-base text-[#000000] font-mono">C:\ssl\</p>
+<p class="text-base text-[#000000] font-mono ml-4">├── certs\</p>
+<p class="text-base text-[#000000] font-mono ml-4">└── keys\</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 9: Step 3 - Create OpenSSL Configuration File -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">STEP 3</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Create OpenSSL Configuration File</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-question-circle text-[#0150c5]"></i>
+                        Why Configuration File?
+                    </h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed mb-3">Modern browsers (Chrome, Edge, Firefox) require <strong>Subject Alternative Name (SAN)</strong> in certificates. Without SAN, browsers show error:</p>
+<div class="code-block bg-red-900/20 p-3 rounded-lg border-2 border-red-500">
+<p class="text-base text-red-700 font-mono font-bold">NET::ERR_CERT_COMMON_NAME_INVALID</p>
+<p class="text-base text-red-600 mt-1">"does not specify Subject Alternative Names"</p>
+</div>
+<p class="text-base text-[#1a1a1a]/80 mt-3">The configuration file adds SAN to your certificate automatically.</p>
+</div>
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-edit text-[#0150c5]"></i>
+                        Create the File
+                    </h3>
+<div class="space-y-2">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">1</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Open <strong>Notepad</strong> (Run as Administrator)</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">2</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Copy and paste the configuration (see right panel)</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">3</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1"><strong>Modify the values</strong> for your environment</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">4</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Save as: <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm">C:\ssl\openssl.cnf</span></p>
+</div>
+</div>
+</div>
+<div class="bg-[#000000] p-4 rounded-xl text-white">
+<h4 class="font-heading-alt text-lg font-bold mb-2 flex items-center gap-2">
+<i class="fas fa-exclamation-triangle text-[#0150c5]"></i>
+                        Important Notes
+                    </h4>
+<ul class="space-y-1 text-base text-white/90">
+<li>• <strong>CN (Common Name)</strong> must match your ePO server IP or hostname</li>
+<li>• <strong>IP.1</strong> in alt_names enables IP-based access</li>
+<li>• If using hostname, add <span class="bg-white/20 px-2 py-1 rounded font-mono text-sm">DNS.1 = your-hostname</span></li>
+</ul>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-file-code text-[#0150c5]"></i>
+                        Configuration File Content
+                    </h3>
+<div class="code-block p-4 rounded-xl overflow-x-auto">
+<pre class="text-base text-white font-mono leading-relaxed">[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+x509_extensions = v3_req
+
+[dn]
+C = IN
+ST = Maharashtra
+L = Mumbai
+O = CyberSecLab
+OU = IT
+CN = 192.168.0.100
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+IP.1 = 192.168.0.100</pre>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-table text-[#0150c5]"></i>
+                        Field Descriptions
+                    </h3>
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead>
+<tr class="bg-[#0150c5] text-white">
+<th class="px-3 py-2 text-left font-heading-alt">Field</th>
+<th class="px-3 py-2 text-left font-heading-alt">Description</th>
+<th class="px-3 py-2 text-left font-heading-alt">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-gray-200">
+<td class="px-3 py-2 font-mono text-[#0150c5] font-bold">C</td>
+<td class="px-3 py-2">Country code (2 letters)</td>
+<td class="px-3 py-2">IN, US, UK</td>
+</tr>
+<tr class="border-b border-gray-200 bg-gray-50">
+<td class="px-3 py-2 font-mono text-[#0150c5] font-bold">ST</td>
+<td class="px-3 py-2">State or Province</td>
+<td class="px-3 py-2">Maharashtra</td>
+</tr>
+<tr class="border-b border-gray-200">
+<td class="px-3 py-2 font-mono text-[#0150c5] font-bold">L</td>
+<td class="px-3 py-2">City/Locality</td>
+<td class="px-3 py-2">Mumbai</td>
+</tr>
+<tr class="border-b border-gray-200 bg-gray-50">
+<td class="px-3 py-2 font-mono text-[#0150c5] font-bold">O</td>
+<td class="px-3 py-2">Organization name</td>
+<td class="px-3 py-2">CyberSecLab</td>
+</tr>
+<tr class="border-b border-gray-200">
+<td class="px-3 py-2 font-mono text-[#0150c5] font-bold">OU</td>
+<td class="px-3 py-2">Department/Unit</td>
+<td class="px-3 py-2">IT</td>
+</tr>
+<tr class="border-b border-gray-200 bg-gray-50">
+<td class="px-3 py-2 font-mono text-[#0150c5] font-bold">CN</td>
+<td class="px-3 py-2">Server IP or hostname</td>
+<td class="px-3 py-2">192.168.0.100</td>
+</tr>
+<tr class="bg-gray-50">
+<td class="px-3 py-2 font-mono text-[#0150c5] font-bold">IP.1</td>
+<td class="px-3 py-2">Server IP address</td>
+<td class="px-3 py-2">192.168.0.100</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 10: Chapter 3 -->
+<div class="ppt-slide" type="chapter">
+<img alt="Generation" class="absolute inset-0 w-full h-full object-cover opacity-30" src="chapter3_generation.png"/>
+<div class="absolute inset-0 bg-gradient-to-br from-[#000000]/85 via-[#0150c5]/80 to-[#000000]/85"></div>
+<div class="relative h-full flex flex-col justify-center z-10">
+<div class="mb-6">
+<div class="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+<p class="text-white/90 text-base font-semibold tracking-wider">CHAPTER THREE</p>
+</div>
+</div>
+<h1 class="font-heading text-7xl font-bold text-white mb-6 leading-tight">Certificate<br/>Generation<br/>Process</h1>
+<p class="text-2xl text-white/90 max-w-2xl font-body-alt">Generating secure keys and certificates with OpenSSL</p>
+<div class="mt-12 flex items-center gap-4">
+<div class="h-1 w-24 bg-[#0150c5]"></div>
+<span class="text-white/70 text-lg">15 min process</span>
+</div>
+</div>
+</div>
+<!-- Slide 11: Step 4 - Generate Password-Protected Private Key -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">STEP 4</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Generate Password-Protected Private Key</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-shield-alt text-[#0150c5]"></i>
+                        Why Password Protection?
+                    </h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Password-protecting the private key adds an <strong>extra layer of security</strong>. Even if someone gets access to the key file, they cannot use it without the passphrase. This is an industry best practice.</p>
+</div>
+<div class="bg-[#000000] p-5 rounded-xl text-white">
+<h3 class="font-heading-alt text-xl font-bold mb-3 flex items-center gap-2">
+<i class="fas fa-terminal text-[#0150c5]"></i>
+                        Run This Command
+                    </h3>
+<div class="code-block p-4 rounded-lg mb-3">
+<p class="text-base text-white font-mono break-all leading-relaxed">"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" genrsa -des3 -out C:\ssl\keys\ca.key 2048</p>
+</div>
+<div class="bg-white/10 p-3 rounded-lg">
+<p class="text-base text-white/90 mb-2 font-semibold">What You'll See:</p>
+<div class="code-block bg-black/50 p-3 rounded">
+<p class="text-base text-green-400 font-mono">Enter PEM pass phrase: ********</p>
+<p class="text-base text-green-400 font-mono">Verifying - Enter PEM pass phrase: ********</p>
+</div>
+</div>
+</div>
+<div class="bg-red-50 p-4 rounded-xl border-l-4 border-red-500">
+<div class="flex items-center gap-2 mb-2">
+<i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+<h4 class="font-heading-alt text-lg font-bold text-red-700">Important</h4>
+</div>
+<ul class="space-y-1 text-base text-red-700">
+<li>• <strong>Remember your passphrase!</strong> You need it in the next step.</li>
+<li>• Use a strong passphrase (mix of letters, numbers, symbols)</li>
+<li>• The passphrase is NOT displayed while typing (security feature)</li>
+</ul>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-info-circle text-[#0150c5]"></i>
+                        Command Explanation
+                    </h3>
+<div class="space-y-3">
+<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">genrsa</code>
+<p class="text-base text-[#1a1a1a]/80">Generate RSA private key</p>
+</div>
+<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">-des3</code>
+<p class="text-base text-[#1a1a1a]/80">Encrypt with Triple DES (password protection)</p>
+</div>
+<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">-out</code>
+<p class="text-base text-[#1a1a1a]/80">Output file location</p>
+</div>
+<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">2048</code>
+<p class="text-base text-[#1a1a1a]/80">Key size in bits (Trellix recommended minimum)</p>
+</div>
+</div>
+</div>
+<div class="bg-[#0150c5] p-5 rounded-xl text-white">
+<h3 class="font-heading-alt text-xl font-bold mb-3 flex items-center gap-2">
+<i class="fas fa-file-export text-white"></i>
+                        Output
+                    </h3>
+<div class="bg-white/20 p-4 rounded-lg">
+<p class="text-base text-white mb-2">File created:</p>
+<p class="text-xl text-white font-mono font-bold">C:\ssl\keys\ca.key</p>
+</div>
+<p class="text-base text-white/90 mt-3">This is your <strong>password-protected private key</strong>. Keep it secure!</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 12: Step 5 - Create Self-Signed Certificate with SAN -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">STEP 5</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Create Self-Signed Certificate with SAN</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-question-circle text-[#0150c5]"></i>
+                        What is a Self-Signed Certificate?
+                    </h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">A certificate where the <strong>issuer and subject are the same entity</strong> (your organization). It's signed by your own private key instead of a trusted Certificate Authority. Perfect for internal use and testing environments.</p>
+</div>
+<div class="bg-[#000000] p-5 rounded-xl text-white">
+<h3 class="font-heading-alt text-xl font-bold mb-3 flex items-center gap-2">
+<i class="fas fa-terminal text-[#0150c5]"></i>
+                        Run This Command
+                    </h3>
+<div class="code-block p-4 rounded-lg mb-3">
+<p class="text-base text-white font-mono break-all leading-relaxed">"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" req -new -x509 -days 365 -key C:\ssl\keys\ca.key -out C:\ssl\certs\ca.cer -config C:\ssl\openssl.cnf</p>
+</div>
+<div class="bg-white/10 p-3 rounded-lg">
+<p class="text-base text-white/90 mb-2 font-semibold">You'll Be Prompted For:</p>
+<div class="code-block bg-black/50 p-3 rounded">
+<p class="text-base text-green-400 font-mono">Enter pass phrase for C:\ssl\keys\ca.key: ********</p>
+</div>
+<p class="text-sm text-white/80 mt-2">Enter the passphrase you created in Step 4.</p>
+</div>
+</div>
+<div class="bg-[#0150c5] p-4 rounded-xl text-white">
+<h4 class="font-heading-alt text-lg font-bold mb-2 flex items-center gap-2">
+<i class="fas fa-file-export text-white"></i>
+                        Output
+                    </h4>
+<p class="text-base text-white/90 mb-2">File created:</p>
+<p class="text-xl text-white font-mono font-bold">C:\ssl\certs\ca.cer</p>
+<p class="text-base text-white/80 mt-2">Your self-signed certificate with SAN support</p>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-info-circle text-[#0150c5]"></i>
+                    Command Explanation
+                </h3>
+<div class="space-y-2">
+<div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">req</code>
+<p class="text-base text-[#1a1a1a]/80">Certificate request command</p>
+</div>
+<div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">-new</code>
+<p class="text-base text-[#1a1a1a]/80">Create new request</p>
+</div>
+<div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">-x509</code>
+<p class="text-base text-[#1a1a1a]/80">Output self-signed certificate</p>
+</div>
+<div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">-days 365</code>
+<p class="text-base text-[#1a1a1a]/80">Valid for 1 year</p>
+</div>
+<div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">-key</code>
+<p class="text-base text-[#1a1a1a]/80">Use this private key</p>
+</div>
+<div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">-out</code>
+<p class="text-base text-[#1a1a1a]/80">Output certificate file</p>
+</div>
+<div class="flex items-start gap-3 p-2 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0 w-24">-config</code>
+<p class="text-base text-[#1a1a1a]/80">Use configuration file (includes SAN)</p>
+</div>
+</div>
+<div class="mt-4 bg-[#0150c5]/10 p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<i class="fas fa-calendar-alt text-[#0150c5] text-xl"></i>
+<h4 class="font-heading-alt text-lg font-bold text-[#000000]">Validity Period</h4>
+</div>
+<p class="text-base text-[#1a1a1a]/80">Certificate is valid for <strong>365 days</strong>. Mark your calendar to renew before expiration!</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 13: Step 6 - Convert to RSA Traditional Format -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">STEP 6</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Convert Private Key to RSA Traditional Format</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-question-circle text-[#0150c5]"></i>
+                        Why This Step?
+                    </h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed mb-3">OpenSSL 3.x creates keys in <strong>PKCS#8 format</strong>, but ePO requires <strong>Traditional RSA format</strong>. This conversion ensures ePO can read the private key correctly.</p>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-red-50 p-3 rounded-lg border-2 border-red-500">
+<p class="text-base text-red-700 font-semibold mb-1">PKCS#8 Format</p>
+<div class="code-block-light p-2 rounded">
+<p class="text-sm text-red-600 font-mono">-----BEGIN PRIVATE KEY-----</p>
+</div>
+</div>
+<div class="bg-green-50 p-3 rounded-lg border-2 border-green-500">
+<p class="text-base text-green-700 font-semibold mb-1">RSA Format</p>
+<div class="code-block-light p-2 rounded">
+<p class="text-sm text-green-600 font-mono">-----BEGIN RSA PRIVATE KEY-----</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#000000] p-5 rounded-xl text-white">
+<h3 class="font-heading-alt text-xl font-bold mb-3 flex items-center gap-2">
+<i class="fas fa-terminal text-[#0150c5]"></i>
+                        Run This Command
+                    </h3>
+<div class="code-block p-4 rounded-lg mb-3">
+<p class="text-base text-white font-mono break-all leading-relaxed">"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" rsa -in C:\ssl\keys\ca.key -out C:\ssl\keys\ca-rsa.key -traditional</p>
+</div>
+<div class="bg-white/10 p-3 rounded-lg">
+<p class="text-base text-white/90 mb-2 font-semibold">You'll See:</p>
+<div class="code-block bg-black/50 p-3 rounded">
+<p class="text-base text-green-400 font-mono">Enter pass phrase for C:\ssl\keys\ca.key: ********</p>
+<p class="text-base text-green-400 font-mono">writing RSA key</p>
+</div>
+</div>
+</div>
+<div class="bg-red-50 p-4 rounded-xl border-l-4 border-red-500">
+<div class="flex items-center gap-2 mb-2">
+<i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+<h4 class="font-heading-alt text-lg font-bold text-red-700">Note</h4>
+</div>
+<p class="text-base text-red-700">The converted key (ca-rsa.key) is <strong>unencrypted</strong> for ePO compatibility. Keep this file secure!</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-info-circle text-[#0150c5]"></i>
+                        Command Explanation
+                    </h3>
+<div class="space-y-3">
+<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0">rsa</code>
+<p class="text-base text-[#1a1a1a]/80">RSA key processing command</p>
+</div>
+<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0">-in</code>
+<p class="text-base text-[#1a1a1a]/80">Input encrypted key</p>
+</div>
+<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0">-out</code>
+<p class="text-base text-[#1a1a1a]/80">Output RSA format key</p>
+</div>
+<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+<code class="text-[#0150c5] font-mono text-base font-bold shrink-0">-traditional</code>
+<p class="text-base text-[#1a1a1a]/80">Use traditional RSA format</p>
+</div>
+</div>
+</div>
+<div class="bg-[#0150c5] p-5 rounded-xl text-white">
+<h3 class="font-heading-alt text-xl font-bold mb-3 flex items-center gap-2">
+<i class="fas fa-file-export text-white"></i>
+                        Output
+                    </h3>
+<div class="bg-white/20 p-4 rounded-lg">
+<p class="text-base text-white mb-2">File created:</p>
+<p class="text-xl text-white font-mono font-bold">C:\ssl\keys\ca-rsa.key</p>
+<p class="text-base text-white/80 mt-2">Unencrypted, RSA format for ePO</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<h4 class="font-heading-alt text-lg font-bold text-[#000000] mb-2 flex items-center gap-2">
+<i class="fas fa-key text-[#0150c5]"></i>
+                        Key Files Summary
+                    </h4>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+<span class="text-base text-[#1a1a1a] font-mono">ca.key</span>
+<span class="text-sm text-[#0150c5] font-semibold">Encrypted (backup)</span>
+</div>
+<div class="flex items-center justify-between p-2 bg-[#0150c5]/10 rounded">
+<span class="text-base text-[#1a1a1a] font-semibold font-mono">ca-rsa.key</span>
+<span class="text-sm text-green-600 font-semibold">For ePO (use this)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 14: Step 7 - Verify Certificate -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">STEP 7</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Verify Certificate (Optional but Recommended)</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-question-circle text-[#0150c5]"></i>
+                        Why Verify?
+                    </h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Before uploading to ePO, <strong>confirm the certificate contains correct information and SAN</strong>. This step catches configuration errors early and saves troubleshooting time later.</p>
+</div>
+<div class="bg-[#000000] p-5 rounded-xl text-white">
+<h3 class="font-heading-alt text-xl font-bold mb-3 flex items-center gap-2">
+<i class="fas fa-terminal text-[#0150c5]"></i>
+                        Run This Command
+                    </h3>
+<div class="code-block p-4 rounded-lg">
+<p class="text-base text-white font-mono break-all leading-relaxed">"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" x509 -in C:\ssl\certs\ca.cer -text -noout</p>
+</div>
+</div>
+<div class="bg-[#0150c5] p-5 rounded-xl text-white">
+<h3 class="font-heading-alt text-xl font-bold mb-3 flex items-center gap-2">
+<i class="fas fa-clipboard-check text-white"></i>
+                        Confirm These Items
+                    </h3>
+<div class="space-y-2">
+<div class="flex items-start gap-2">
+<i class="fas fa-check-circle text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">Subject shows your organization details</p>
+</div>
+<div class="flex items-start gap-2">
+<i class="fas fa-check-circle text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">CN matches your server IP</p>
+</div>
+<div class="flex items-start gap-2">
+<i class="fas fa-check-circle text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">Subject Alternative Name shows your IP address</p>
+</div>
+<div class="flex items-start gap-2">
+<i class="fas fa-check-circle text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">Validity period is correct (365 days)</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-eye text-[#0150c5]"></i>
+                    What to Look For
+                </h3>
+<div class="code-block p-4 rounded-xl overflow-x-auto">
+<pre class="text-base text-white font-mono leading-relaxed">Subject: C = IN, ST = Maharashtra, 
+         L = Mumbai, O = CyberSecLab, 
+         OU = IT, CN = 192.168.0.100
+
+X509v3 extensions:
+    X509v3 Subject Alternative Name:
+        IP Address:192.168.0.100
+
+Validity:
+    Not Before: Feb 5 00:00:00 2026 GMT
+    Not After : Feb 5 00:00:00 2027 GMT</pre>
+</div>
+<div class="mt-4 space-y-3">
+<div class="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
+<div class="flex items-center gap-2 mb-1">
+<i class="fas fa-check-circle text-green-600"></i>
+<h4 class="font-heading-alt text-base font-bold text-green-700">Subject</h4>
+</div>
+<p class="text-base text-green-700">Verify your organization details are correct</p>
+</div>
+<div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500">
+<div class="flex items-center gap-2 mb-1">
+<i class="fas fa-check-circle text-blue-600"></i>
+<h4 class="font-heading-alt text-base font-bold text-blue-700">Subject Alternative Name</h4>
+</div>
+<p class="text-base text-blue-700">Critical for modern browser compatibility</p>
+</div>
+<div class="bg-purple-50 p-3 rounded-lg border-l-4 border-purple-500">
+<div class="flex items-center gap-2 mb-1">
+<i class="fas fa-check-circle text-purple-600"></i>
+<h4 class="font-heading-alt text-base font-bold text-purple-700">Validity Period</h4>
+</div>
+<p class="text-base text-purple-700">Confirm 365-day validity from creation date</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 15: Chapter 4 -->
+<div class="ppt-slide" type="chapter">
+<img alt="Deployment" class="absolute inset-0 w-full h-full object-cover opacity-30" src="chapter4_deployment.png"/>
+<div class="absolute inset-0 bg-gradient-to-br from-[#0150c5]/85 via-[#000000]/80 to-[#0150c5]/85"></div>
+<div class="relative h-full flex flex-col justify-center z-10">
+<div class="mb-6">
+<div class="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+<p class="text-white/90 text-base font-semibold tracking-wider">CHAPTER FOUR</p>
+</div>
+</div>
+<h1 class="font-heading text-7xl font-bold text-white mb-6 leading-tight">ePO Deployment<br/>&amp;<br/>Verification</h1>
+<p class="text-2xl text-white/90 max-w-2xl font-body-alt">Uploading certificates and completing the installation</p>
+<div class="mt-12 flex items-center gap-4">
+<div class="h-1 w-24 bg-white"></div>
+<span class="text-white/70 text-lg">10 min deployment</span>
+</div>
+</div>
+</div>
+<!-- Slide 16: Step 8 - Upload Certificate to ePO -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">STEP 8</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Upload Certificate to ePO</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-route text-[#0150c5]"></i>
+                        Navigate to Server Settings
+                    </h3>
+<div class="space-y-2">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">1</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Login to ePO console: <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm">https://192.168.0.100:8443</span></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">2</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Click <strong>Menu</strong> (hamburger icon)</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">3</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Go to <strong>Configuration</strong> → <strong>Server Settings</strong></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">4</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">In the Setting Categories list, find <strong>Server Certificate</strong></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">5</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Click <strong>Edit</strong></p>
+</div>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-mouse-pointer text-[#0150c5]"></i>
+                        Select Certificate Option
+                    </h3>
+<div class="bg-[#0150c5]/10 p-4 rounded-lg border-l-4 border-[#0150c5]">
+<p class="text-base text-[#000000] font-semibold">Select:</p>
+<p class="text-lg text-[#0150c5] font-bold mt-1">"Use the provided certificate and private key"</p>
+</div>
+</div>
+<div class="bg-[#000000] p-4 rounded-xl text-white">
+<h4 class="font-heading-alt text-lg font-bold mb-2 flex items-center gap-2">
+<i class="fas fa-question-circle text-[#0150c5]"></i>
+                        Why Leave Password Empty?
+                    </h4>
+<p class="text-base text-white/90 leading-relaxed">The ca-rsa.key file is the <strong>converted unencrypted key</strong> from Step 6. It doesn't have a password.</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-upload text-[#0150c5]"></i>
+                        Upload Files
+                    </h3>
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead>
+<tr class="bg-[#0150c5] text-white">
+<th class="px-4 py-3 text-left font-heading-alt text-lg">Field</th>
+<th class="px-4 py-3 text-left font-heading-alt text-lg">File to Select</th>
+</tr>
+</thead>
+<tbody class="text-base">
+<tr class="border-b border-gray-200">
+<td class="px-4 py-3">
+<div class="flex items-center gap-2">
+<i class="fas fa-certificate text-[#0150c5]"></i>
+<span class="font-semibold">Certificate</span>
+</div>
+</td>
+<td class="px-4 py-3">
+<div class="code-block-light p-2 rounded">
+<p class="text-sm text-[#000000] font-mono">C:\ssl\certs\ca.cer</p>
+</div>
+</td>
+</tr>
+<tr class="border-b border-gray-200 bg-gray-50">
+<td class="px-4 py-3">
+<div class="flex items-center gap-2">
+<i class="fas fa-key text-[#0150c5]"></i>
+<span class="font-semibold">Private key (PEM)</span>
+</div>
+</td>
+<td class="px-4 py-3">
+<div class="code-block-light p-2 rounded">
+<p class="text-sm text-[#000000] font-mono">C:\ssl\keys\ca-rsa.key</p>
+</div>
+</td>
+</tr>
+<tr class="bg-gray-50">
+<td class="px-4 py-3">
+<div class="flex items-center gap-2">
+<i class="fas fa-lock text-[#0150c5]"></i>
+<span class="font-semibold">Private key password</span>
+</div>
+</td>
+<td class="px-4 py-3">
+<span class="text-red-600 font-bold text-lg">Leave EMPTY</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-save text-[#0150c5]"></i>
+                        Save Changes
+                    </h3>
+<div class="space-y-3">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">1</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Click <strong>Save</strong></p>
+</div>
+</div>
+<div class="mt-4 bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+<p class="text-base text-green-700 font-semibold mb-2">Success Message:</p>
+<div class="code-block-light p-3 rounded">
+<p class="text-sm text-green-700 font-mono">The user 'admin' updated the CA certificate for the certificate-based authentication at [date/time]. ePolicy Orchestrator - On-prem must be restarted for this to take effect.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 17: Step 9 - Restart ePO Server -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">STEP 9</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Restart ePO Server</h2>
+</div>
+<div class="mb-4 bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-2 flex items-center gap-2">
+<i class="fas fa-question-circle text-[#0150c5]"></i>
+                Why Restart?
+            </h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">ePO needs to <strong>reload with the new certificate</strong>. The change won't take effect until restart. This is a critical step - skipping it will result in the old certificate remaining active.</p>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="bg-white p-5 rounded-xl border-t-4 border-[#0150c5]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-xl shrink-0">1</div>
+<h3 class="font-heading-alt text-xl font-bold text-[#000000]">Command Prompt</h3>
+</div>
+<p class="text-base text-[#1a1a1a]/70 mb-3">Recommended method</p>
+<div class="space-y-2">
+<div class="code-block p-3 rounded-lg">
+<p class="text-sm text-white font-mono">net stop "McAfee ePolicy Orchestrator Application Server"</p>
+</div>
+<p class="text-sm text-[#1a1a1a]/70">Wait for service to stop, then:</p>
+<div class="code-block p-3 rounded-lg">
+<p class="text-sm text-white font-mono">net start "McAfee ePolicy Orchestrator Application Server"</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border-t-4 border-[#0150c5]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-xl shrink-0">2</div>
+<h3 class="font-heading-alt text-xl font-bold text-[#000000]">Services Console</h3>
+</div>
+<p class="text-base text-[#1a1a1a]/70 mb-3">GUI alternative</p>
+<div class="space-y-2">
+<div class="flex items-start gap-2">
+<div class="w-6 h-6 rounded-full bg-[#0150c5] flex items-center justify-center text-white text-sm font-bold shrink-0">1</div>
+<p class="text-base text-[#1a1a1a]/80 pt-0.5">Press <strong>Win + R</strong></p>
+</div>
+<div class="flex items-start gap-2">
+<div class="w-6 h-6 rounded-full bg-[#0150c5] flex items-center justify-center text-white text-sm font-bold shrink-0">2</div>
+<p class="text-base text-[#1a1a1a]/80 pt-0.5">Type <span class="bg-gray-100 px-1 rounded font-mono text-sm">services.msc</span> → Press Enter</p>
+</div>
+<div class="flex items-start gap-2">
+<div class="w-6 h-6 rounded-full bg-[#0150c5] flex items-center justify-center text-white text-sm font-bold shrink-0">3</div>
+<p class="text-base text-[#1a1a1a]/80 pt-0.5">Find <strong>"McAfee ePolicy Orchestrator Application Server"</strong></p>
+</div>
+<div class="flex items-start gap-2">
+<div class="w-6 h-6 rounded-full bg-[#0150c5] flex items-center justify-center text-white text-sm font-bold shrink-0">4</div>
+<p class="text-base text-[#1a1a1a]/80 pt-0.5">Right-click → <strong>Restart</strong></p>
+</div>
+</div>
+</div>
+<div class="bg-white p-5 rounded-xl border-t-4 border-[#0150c5]">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-xl shrink-0">3</div>
+<h3 class="font-heading-alt text-xl font-bold text-[#000000]">Restart Server</h3>
+</div>
+<p class="text-base text-[#1a1a1a]/70 mb-3">Nuclear option</p>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed mb-3">If other methods don't work, restart the entire Windows server.</p>
+<div class="bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500">
+<p class="text-base text-yellow-700"><i class="fas fa-exclamation-triangle mr-2"></i><strong>Warning:</strong> This will interrupt all services on the server.</p>
+</div>
+</div>
+</div>
+<div class="mt-4 bg-[#0150c5] p-4 rounded-xl text-white">
+<div class="flex items-center gap-3">
+<i class="fas fa-clock text-white text-2xl"></i>
+<div>
+<h4 class="font-heading-alt text-lg font-bold">Service Restart Time</h4>
+<p class="text-base text-white/90">The ePO Application Server typically takes <strong>2-5 minutes</strong> to fully restart. Be patient and wait for the service to show "Running" status.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 18: Step 10 - Import Certificate to Browser -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">STEP 10</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Import Certificate to Browser (Remove Warning)</h2>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-question-circle text-[#0150c5]"></i>
+                        Why Import?
+                    </h3>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Self-signed certificates are <strong>not trusted by browsers by default</strong>. Importing to the Trusted Root store removes the "Not secure" warning and provides a seamless user experience.</p>
+</div>
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fab fa-windows text-[#0150c5]"></i>
+                        Steps for Windows
+                    </h3>
+<div class="space-y-2">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">1</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Navigate to <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm">C:\ssl\certs\</span></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">2</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Double-click on <strong>ca.cer</strong></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">3</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Click <strong>Install Certificate</strong></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">4</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Select <strong>Local Machine</strong> → Click <strong>Next</strong></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">5</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Select <strong>"Place all certificates in the following store"</strong></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">6</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Click <strong>Browse</strong> → Select <strong>"Trusted Root Certification Authorities"</strong></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">7</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Click <strong>OK</strong> → <strong>Next</strong> → <strong>Finish</strong></p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">8</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Click <strong>Yes</strong> to confirm the security warning</p>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-white p-5 rounded-xl border-l-4 border-[#0150c5]">
+<h3 class="font-heading-alt text-xl font-bold text-[#000000] mb-3 flex items-center gap-2">
+<i class="fas fa-redo text-[#0150c5]"></i>
+                        Restart Browser
+                    </h3>
+<div class="space-y-2">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">1</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Close <strong>ALL</strong> browser windows completely</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">2</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Reopen browser</p>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">3</div>
+<p class="text-base text-[#1a1a1a]/80 pt-1">Navigate to <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm">https://192.168.0.100:8443</span></p>
+</div>
+</div>
+</div>
+<div class="bg-[#0150c5] p-5 rounded-xl text-white">
+<h3 class="font-heading-alt text-xl font-bold mb-3 flex items-center gap-2">
+<i class="fas fa-check-circle text-white"></i>
+                        Expected Result
+                    </h3>
+<div class="space-y-2">
+<div class="flex items-start gap-2">
+<i class="fas fa-check text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">Certificate shows your organization name (CyberSecLab)</p>
+</div>
+<div class="flex items-start gap-2">
+<i class="fas fa-check text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">Certificate shows correct validity dates</p>
+</div>
+<div class="flex items-start gap-2">
+<i class="fas fa-check text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">Connection is encrypted</p>
+</div>
+<div class="flex items-start gap-2">
+<i class="fas fa-check text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">No more "Not secure" warning</p>
+</div>
+</div>
+</div>
+<div class="bg-green-50 p-4 rounded-xl border-l-4 border-green-500">
+<div class="flex items-center gap-2 mb-2">
+<i class="fas fa-trophy text-green-600 text-xl"></i>
+<h4 class="font-heading-alt text-lg font-bold text-green-700">Success!</h4>
+</div>
+<p class="text-base text-green-700">Your Trellix ePO server is now secured with a self-signed SSL certificate!</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 19: Summary of Files Created -->
+<div class="ppt-slide" type="content">
+<div class="mb-5">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">SUMMARY</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Summary of Files Created</h2>
+<p class="text-lg text-[#1a1a1a]/70 mt-2">All certificate files and their purposes</p>
+</div>
+<div class="bg-white rounded-xl overflow-hidden border border-gray-200">
+<table class="w-full">
+<thead>
+<tr class="bg-[#0150c5] text-white">
+<th class="px-6 py-4 text-left font-heading-alt text-xl">File</th>
+<th class="px-6 py-4 text-left font-heading-alt text-xl">Location</th>
+<th class="px-6 py-4 text-left font-heading-alt text-xl">Purpose</th>
+</tr>
+</thead>
+<tbody class="text-base">
+<tr class="border-b border-gray-200">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<i class="fas fa-file-code text-[#0150c5] text-xl"></i>
+<code class="bg-gray-100 px-2 py-1 rounded font-semibold">openssl.cnf</code>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="code-block-light p-2 rounded inline-block">
+<p class="text-sm text-[#000000] font-mono">C:\ssl\</p>
+</div>
+</td>
+<td class="px-6 py-4 text-[#1a1a1a]/80">Configuration with SAN</td>
+</tr>
+<tr class="border-b border-gray-200 bg-gray-50">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<i class="fas fa-key text-[#0150c5] text-xl"></i>
+<code class="bg-gray-100 px-2 py-1 rounded font-semibold">ca.key</code>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="code-block-light p-2 rounded inline-block">
+<p class="text-sm text-[#000000] font-mono">C:\ssl\keys\</p>
+</div>
+</td>
+<td class="px-6 py-4 text-[#1a1a1a]/80">Password-protected private key</td>
+</tr>
+<tr class="border-b border-gray-200">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<i class="fas fa-key text-green-600 text-xl"></i>
+<code class="bg-gray-100 px-2 py-1 rounded font-semibold">ca-rsa.key</code>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="code-block-light p-2 rounded inline-block">
+<p class="text-sm text-[#000000] font-mono">C:\ssl\keys\</p>
+</div>
+</td>
+<td class="px-6 py-4 text-[#1a1a1a]/80">RSA format key (for ePO)</td>
+</tr>
+<tr class="bg-gray-50">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<i class="fas fa-certificate text-[#0150c5] text-xl"></i>
+<code class="bg-gray-100 px-2 py-1 rounded font-semibold">ca.cer</code>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="code-block-light p-2 rounded inline-block">
+<p class="text-sm text-[#000000] font-mono">C:\ssl\certs\</p>
+</div>
+</td>
+<td class="px-6 py-4 text-[#1a1a1a]/80">Self-signed certificate</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-5">
+<div class="bg-[#0150c5]/10 p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<i class="fas fa-shield-alt text-[#0150c5] text-xl"></i>
+<h4 class="font-heading-alt text-lg font-bold text-[#000000]">Backup These Files</h4>
+</div>
+<p class="text-base text-[#1a1a1a]/80">Keep secure backup of all certificate files in an encrypted location</p>
+</div>
+<div class="bg-[#000000]/5 p-4 rounded-xl border-l-4 border-[#000000]">
+<div class="flex items-center gap-2 mb-2">
+<i class="fas fa-user-shield text-[#000000] text-xl"></i>
+<h4 class="font-heading-alt text-lg font-bold text-[#000000]">Secure the Keys Folder</h4>
+</div>
+<p class="text-base text-[#1a1a1a]/80">Restrict C:	sl	solder permissions to administrators only</p>
+</div>
+</div>
+</div>
+<!-- Slide 20: Chapter 5 -->
+<div class="ppt-slide" type="chapter">
+<img alt="Troubleshooting" class="absolute inset-0 w-full h-full object-cover opacity-30" src="chapter5_troubleshooting.png"/>
+<div class="absolute inset-0 bg-gradient-to-br from-[#000000]/85 via-[#0150c5]/80 to-[#000000]/85"></div>
+<div class="relative h-full flex flex-col justify-center z-10">
+<div class="mb-6">
+<div class="inline-block px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+<p class="text-white/90 text-base font-semibold tracking-wider">CHAPTER FIVE</p>
+</div>
+</div>
+<h1 class="font-heading text-7xl font-bold text-white mb-6 leading-tight">Troubleshooting<br/>&amp;<br/>Best Practices</h1>
+<p class="text-2xl text-white/90 max-w-2xl font-body-alt">Common issues, solutions, and security recommendations</p>
+<div class="mt-12 flex items-center gap-4">
+<div class="h-1 w-24 bg-[#0150c5]"></div>
+<span class="text-white/70 text-lg">Reference guide</span>
+</div>
+</div>
+</div>
+<!-- Slide 21: Troubleshooting Common Errors -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">TROUBLESHOOTING</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Troubleshooting Common Errors</h2>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-3">
+<div class="bg-white p-4 rounded-xl border-l-4 border-red-500">
+<div class="flex items-start gap-3">
+<i class="fas fa-times-circle text-red-500 text-2xl shrink-0"></i>
+<div>
+<h3 class="font-heading-alt text-lg font-bold text-red-700 mb-2">"Private key file did not contain a valid private key"</h3>
+<div class="space-y-2">
+<div>
+<p class="text-base text-[#000000] font-semibold">Cause:</p>
+<p class="text-base text-[#1a1a1a]/80">Using wrong key file or key format</p>
+</div>
+<div>
+<p class="text-base text-[#000000] font-semibold">Solution:</p>
+<p class="text-base text-[#1a1a1a]/80">Use <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm">ca-rsa.key</span> (converted RSA format), not <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm">ca.key</span></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-orange-500">
+<div class="flex items-start gap-3">
+<i class="fas fa-times-circle text-orange-500 text-2xl shrink-0"></i>
+<div>
+<h3 class="font-heading-alt text-lg font-bold text-orange-700 mb-2">"NET::ERR_CERT_COMMON_NAME_INVALID"</h3>
+<div class="space-y-2">
+<div>
+<p class="text-base text-[#000000] font-semibold">Cause:</p>
+<p class="text-base text-[#1a1a1a]/80">Certificate missing SAN</p>
+</div>
+<div>
+<p class="text-base text-[#000000] font-semibold">Solution:</p>
+<p class="text-base text-[#1a1a1a]/80">Ensure openssl.cnf has [alt_names] section with correct IP</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-yellow-500">
+<div class="flex items-start gap-3">
+<i class="fas fa-times-circle text-yellow-600 text-2xl shrink-0"></i>
+<div>
+<h3 class="font-heading-alt text-lg font-bold text-yellow-700 mb-2">Browser Still Shows "Not Secure"</h3>
+<div class="space-y-2">
+<div>
+<p class="text-base text-[#000000] font-semibold">Cause:</p>
+<p class="text-base text-[#1a1a1a]/80">Certificate not imported to trusted store</p>
+</div>
+<div>
+<p class="text-base text-[#000000] font-semibold">Solution:</p>
+<p class="text-base text-[#1a1a1a]/80">Follow Step 10 to import certificate to Trusted Root CA</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="bg-white p-4 rounded-xl border-l-4 border-blue-500">
+<div class="flex items-start gap-3">
+<i class="fas fa-times-circle text-blue-500 text-2xl shrink-0"></i>
+<div>
+<h3 class="font-heading-alt text-lg font-bold text-blue-700 mb-2">Certificate Shows Old Information After Upload</h3>
+<div class="space-y-2">
+<div>
+<p class="text-base text-[#000000] font-semibold">Cause:</p>
+<p class="text-base text-[#1a1a1a]/80">ePO not restarted</p>
+</div>
+<div>
+<p class="text-base text-[#000000] font-semibold">Solution:</p>
+<p class="text-base text-[#1a1a1a]/80">Restart ePO Application Server service</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-purple-500">
+<div class="flex items-start gap-3">
+<i class="fas fa-times-circle text-purple-500 text-2xl shrink-0"></i>
+<div>
+<h3 class="font-heading-alt text-lg font-bold text-purple-700 mb-2">Cannot Find Services</h3>
+<div class="space-y-2">
+<div>
+<p class="text-base text-[#000000] font-semibold">Service Name:</p>
+<p class="text-base text-[#1a1a1a]/80">McAfee ePolicy Orchestrator Application Server</p>
+</div>
+<div>
+<p class="text-base text-[#000000] font-semibold">Alternative:</p>
+<p class="text-base text-[#1a1a1a]/80">Restart the entire Windows server</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-[#0150c5] p-4 rounded-xl text-white">
+<div class="flex items-center gap-3 mb-3">
+<i class="fas fa-lightbulb text-white text-2xl"></i>
+<h3 class="font-heading-alt text-xl font-bold">Quick Diagnostic Tips</h3>
+</div>
+<div class="space-y-2">
+<div class="flex items-start gap-2">
+<i class="fas fa-check-circle text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">Verify file paths are correct</p>
+</div>
+<div class="flex items-start gap-2">
+<i class="fas fa-check-circle text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">Check you have Administrator privileges</p>
+</div>
+<div class="flex items-start gap-2">
+<i class="fas fa-check-circle text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">Confirm ePO version is 5.10.0 or newer</p>
+</div>
+<div class="flex items-start gap-2">
+<i class="fas fa-check-circle text-white text-lg shrink-0 mt-1"></i>
+<p class="text-base text-white/90">Review OpenSSL installation path</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 22: Quick Reference Commands -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">QUICK REFERENCE</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Quick Reference Commands</h2>
+<p class="text-lg text-[#1a1a1a]/70 mt-2">All commands in one place for easy copy-paste</p>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-3">
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">1</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Create folders</h3>
+</div>
+<div class="code-block p-3 rounded-lg">
+<p class="text-base text-white font-mono">mkdir C:\ssl</p>
+<p class="text-base text-white font-mono">mkdir C:\ssl\certs</p>
+<p class="text-base text-white font-mono">mkdir C:\ssl\keys</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">2</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Generate password-protected key</h3>
+</div>
+<div class="code-block p-3 rounded-lg">
+<p class="text-sm text-white font-mono break-all leading-relaxed">"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" genrsa -des3 -out C:\ssl\keys\ca.key 2048</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">3</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Create certificate with SAN</h3>
+</div>
+<div class="code-block p-3 rounded-lg">
+<p class="text-sm text-white font-mono break-all leading-relaxed">"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" req -new -x509 -days 365 -key C:\ssl\keys\ca.key -out C:\ssl\certs\ca.cer -config C:\ssl\openssl.cnf</p>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">4</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Convert to RSA format</h3>
+</div>
+<div class="code-block p-3 rounded-lg">
+<p class="text-sm text-white font-mono break-all leading-relaxed">"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" rsa -in C:\ssl\keys\ca.key -out C:\ssl\keys\ca-rsa.key -traditional</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">5</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Verify certificate</h3>
+</div>
+<div class="code-block p-3 rounded-lg">
+<p class="text-sm text-white font-mono break-all leading-relaxed">"C:\Program Files\OpenSSL-Win64\bin\openssl.exe" x509 -in C:\ssl\certs\ca.cer -text -noout</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-8 h-8 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold shrink-0">6</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Restart ePO</h3>
+</div>
+<div class="code-block p-3 rounded-lg">
+<p class="text-base text-white font-mono">net stop "McAfee ePolicy Orchestrator Application Server"</p>
+<p class="text-base text-white font-mono">net start "McAfee ePolicy Orchestrator Application Server"</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 bg-[#0150c5]/10 p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-3">
+<i class="fas fa-info-circle text-[#0150c5] text-2xl"></i>
+<p class="text-base text-[#1a1a1a]/80"><strong>Pro Tip:</strong> Save these commands in a text file for future reference. The paths may vary based on your OpenSSL installation location.</p>
+</div>
+</div>
+</div>
+<!-- Slide 23: Security Best Practices -->
+<div class="ppt-slide" type="content">
+<div class="mb-4">
+<p class="text-base font-semibold tracking-wider text-[#0150c5] mb-2">BEST PRACTICES</p>
+<h2 class="font-heading text-4xl font-bold text-[#000000]">Security Best Practices</h2>
+<p class="text-lg text-[#1a1a1a]/70 mt-2">Essential recommendations for maintaining certificate security</p>
+</div>
+<div class="grid grid-cols-3 gap-4">
+<div class="space-y-3">
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-lg shrink-0">1</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Keep Private Keys Secure</h3>
+</div>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Never share <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm">ca.key</span> or <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm">ca-rsa.key</span> files. Store them in an encrypted location with restricted access.</p>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-lg shrink-0">2</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Use Strong Passphrase</h3>
+</div>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Minimum <strong>12 characters</strong> with mixed types (uppercase, lowercase, numbers, symbols). Avoid dictionary words.</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-lg shrink-0">3</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Limit File Access</h3>
+</div>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Restrict <span class="bg-gray-100 px-2 py-1 rounded font-mono text-sm">C:\ssl\keys\</span> folder permissions to administrators only. Use NTFS permissions.</p>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-lg shrink-0">4</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Renew Before Expiry</h3>
+</div>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Certificate valid for <strong>365 days</strong>. Set calendar reminder 30 days before expiration to avoid service disruption.</p>
+</div>
+</div>
+<div class="space-y-3">
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-lg shrink-0">5</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Backup Files</h3>
+</div>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Keep secure backup of certificate files in an encrypted offline location. Test restoration process periodically.</p>
+</div>
+<div class="bg-white p-4 rounded-xl border-l-4 border-[#0150c5]">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded-full bg-[#0150c5] flex items-center justify-center text-white font-bold text-lg shrink-0">6</div>
+<h3 class="font-heading-alt text-lg font-bold text-[#000000]">Production Use</h3>
+</div>
+<p class="text-base text-[#1a1a1a]/80 leading-relaxed">Consider using <strong>CA-signed certificate</strong> for production environments with external access requirements.</p>
+</div>
+</div>
+</div>
+<div class="mt-4 bg-[#000000] p-5 rounded-xl text-white">
+<div class="flex items-start gap-4">
+<i class="fas fa-exclamation-triangle text-[#0150c5] text-3xl shrink-0"></i>
+<div>
+<h3 class="font-heading-alt text-xl font-bold mb-2">Critical Security Reminder</h3>
+<p class="text-base text-white/90 leading-relaxed">Self-signed certificates provide encryption but <strong>do not provide identity verification</strong> by default. They are ideal for internal networks and testing. For production environments accessible from the internet, consider using certificates from a trusted Certificate Authority (CA) such as DigiCert, Let's Encrypt, or Sectigo.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Slide 24: Final -->
+<div class="ppt-slide" type="final">
+<div class="absolute inset-0 bg-gradient-to-br from-[#0150c5] via-[#0150c5]/90 to-[#000000]"></div>
+<div class="relative h-full flex flex-col justify-center items-center text-center z-10">
+<div class="mb-6">
+<div class="w-24 h-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-4">
+<i class="fas fa-check-circle text-white text-5xl"></i>
+</div>
+</div>
+<h1 class="font-heading text-6xl font-bold text-white mb-6 leading-tight">Certificate Deployment<br/>Complete</h1>
+<p class="text-2xl text-white/90 max-w-3xl mb-8 font-body-alt leading-relaxed">Your Trellix ePO server is now secured with a self-signed SSL certificate. Remember to monitor certificate expiration and renew before the 365-day validity period ends.</p>
+<div class="grid grid-cols-3 gap-6 max-w-4xl mb-8">
+<div class="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20">
+<i class="fas fa-shield-alt text-white text-3xl mb-3"></i>
+<h3 class="font-heading-alt text-xl font-bold text-white mb-2">Encrypted</h3>
+<p class="text-base text-white/80">All communications are now encrypted</p>
+</div>
+<div class="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20">
+<i class="fas fa-lock text-white text-3xl mb-3"></i>
+<h3 class="font-heading-alt text-xl font-bold text-white mb-2">Secure</h3>
+<p class="text-base text-white/80">2048-bit RSA encryption active</p>
+</div>
+<div class="bg-white/10 backdrop-blur-sm p-5 rounded-xl border border-white/20">
+<i class="fas fa-calendar-check text-white text-3xl mb-3"></i>
+<h3 class="font-heading-alt text-xl font-bold text-white mb-2">Valid</h3>
+<p class="text-base text-white/80">365 days from creation date</p>
+</div>
+</div>
+<div class="bg-white/10 backdrop-blur-sm px-8 py-4 rounded-xl border border-white/20">
+<p class="text-base text-white/90"><i class="fas fa-book mr-2"></i>Reference: Trellix ePolicy Orchestrator 5.10.0 Product Guide | KB72477</p>
+</div>
+</div>
+</div>
+</body>
+</html>
